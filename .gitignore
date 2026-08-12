@@ -1,0 +1,4 @@
+originals/
+.DS_Store
+.playwright-mcp/
+*.jpeg

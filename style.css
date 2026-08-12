@@ -1,0 +1,100 @@
+:root {
+  --ripple-orange: #f0731f;
+  --ripple-dark: #17181c;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--ripple-dark);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+#viewer {
+  position: fixed;
+  inset: 0;
+}
+
+/* ---- branding overlay ---- */
+.brand {
+  position: fixed;
+  top: 14px;
+  left: 16px;
+  z-index: 50;
+  pointer-events: none;
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  user-select: none;
+}
+
+.brand-name {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.brand-name span {
+  color: var(--ripple-orange);
+  margin-left: 6px;
+}
+
+.brand-sub {
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+/* ---- first-visit hint ---- */
+.hint {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: rgba(23, 24, 28, 0.75);
+  color: #fff;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  pointer-events: none;
+  transition: opacity 1s ease;
+  max-width: 80vw;
+  text-align: center;
+}
+
+.hint.hidden {
+  opacity: 0;
+}
+
+/* ---- Photo Sphere Viewer theme tweaks ---- */
+.psv-loader {
+  color: var(--ripple-orange);
+}
+
+.psv-navbar {
+  background: rgba(23, 24, 28, 0.8);
+}
+
+.psv-caption-content {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.psv-gallery-item-title {
+  font-size: 13px;
+}
+
+.psv-gallery-item--active {
+  outline: 3px solid var(--ripple-orange) !important;
+  outline-offset: -3px;
+}
+
+@media (max-width: 600px) {
+  .brand-name { font-size: 17px; }
+  .brand-sub { font-size: 10px; letter-spacing: 2px; }
+  .hint { top: auto; bottom: 70px; font-size: 12px; }
+}
