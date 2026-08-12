@@ -6,16 +6,24 @@ import { AutorotatePlugin } from '@photo-sphere-viewer/autorotate-plugin';
 const pano = (name) => `assets/panos/${name}.jpg`;
 const thumb = (name) => `assets/thumbs/${name}.jpg`;
 
-// Where the camera should face when arriving at each scene
+// Fallback view per scene, used on the first load and for gallery jumps
+// (arrivals through a door face the direction of travel instead — see
+// transitionOptions below).
 const DEFAULT_VIEWS = {
-  entrance: { yaw: '30deg', pitch: '0deg' },
-  frontdesk: { yaw: '-150deg', pitch: '0deg' },
-  tensionboard: { yaw: '108deg', pitch: '0deg' },
-  garage: { yaw: '-90deg', pitch: '0deg' },
-  back: { yaw: '-90deg', pitch: '0deg' },
-  closet: { yaw: '0deg', pitch: '0deg' },
+  entrance: { yaw: rad(30), pitch: 0 },
+  frontdesk: { yaw: rad(-150), pitch: 0 },
+  tensionboard: { yaw: rad(108), pitch: 0 },
+  garage: { yaw: rad(-90), pitch: 0 },
+  back: { yaw: rad(-20), pitch: 0 },
+  closet: { yaw: rad(-90), pitch: 0 },
 };
 
+function rad(deg) {
+  return (deg * Math.PI) / 180;
+}
+
+// Link yaw/pitch values are calibrated against on-screen angle rulers —
+// each arrow sits on the floor of the passage it leads through.
 const NODES = [
   {
     id: 'entrance',
@@ -24,9 +32,9 @@ const NODES = [
     name: 'Entrance',
     caption: 'Entrance — Welcome to Ripple Boulder',
     links: [
-      { nodeId: 'tensionboard', position: { yaw: '-79deg', pitch: '-10deg' } },
-      { nodeId: 'frontdesk', position: { yaw: '2deg', pitch: '-8deg' } },
-      { nodeId: 'garage', position: { yaw: '167deg', pitch: '-5deg' } },
+      { nodeId: 'tensionboard', position: { yaw: rad(-80), pitch: rad(-8) } },
+      { nodeId: 'frontdesk', position: { yaw: rad(4), pitch: rad(-13) } },
+      { nodeId: 'garage', position: { yaw: rad(128), pitch: rad(-8) } },
     ],
   },
   {
@@ -36,10 +44,10 @@ const NODES = [
     name: 'Front Desk',
     caption: 'Front Desk — Check in & rentals',
     links: [
-      { nodeId: 'entrance', position: { yaw: '-153deg', pitch: '-6deg' } },
-      { nodeId: 'tensionboard', position: { yaw: '-121deg', pitch: '-8deg' } },
-      { nodeId: 'back', position: { yaw: '36deg', pitch: '-6deg' } },
-      { nodeId: 'garage', position: { yaw: '148deg', pitch: '-5deg' } },
+      { nodeId: 'entrance', position: { yaw: rad(-162), pitch: rad(-8) } },
+      { nodeId: 'tensionboard', position: { yaw: rad(-120), pitch: rad(-8) } },
+      { nodeId: 'back', position: { yaw: rad(38), pitch: rad(-18) } },
+      { nodeId: 'garage', position: { yaw: rad(160), pitch: rad(-6) } },
     ],
   },
   {
@@ -49,9 +57,8 @@ const NODES = [
     name: 'Tension Board',
     caption: 'Tension Board — Training area',
     links: [
-      { nodeId: 'back', position: { yaw: '-19deg', pitch: '-4deg' } },
-      { nodeId: 'frontdesk', position: { yaw: '-2deg', pitch: '-7deg' } },
-      { nodeId: 'entrance', position: { yaw: '54deg', pitch: '-8deg' } },
+      { nodeId: 'frontdesk', position: { yaw: rad(-11), pitch: rad(-11) } },
+      { nodeId: 'entrance', position: { yaw: rad(52), pitch: rad(-8) } },
     ],
   },
   {
@@ -61,9 +68,9 @@ const NODES = [
     name: 'Garage',
     caption: 'Garage — Roll-up door & patio',
     links: [
-      { nodeId: 'back', position: { yaw: '-108deg', pitch: '-5deg' } },
-      { nodeId: 'frontdesk', position: { yaw: '158deg', pitch: '-4deg' } },
-      { nodeId: 'entrance', position: { yaw: '176deg', pitch: '-4deg' } },
+      { nodeId: 'back', position: { yaw: rad(-118), pitch: rad(-8) } },
+      { nodeId: 'tensionboard', position: { yaw: rad(163), pitch: rad(-6) } },
+      { nodeId: 'frontdesk', position: { yaw: rad(175), pitch: rad(-6) } },
     ],
   },
   {
@@ -73,9 +80,9 @@ const NODES = [
     name: 'Back Wall',
     caption: 'Back Wall — Bouldering room',
     links: [
-      { nodeId: 'closet', position: { yaw: '15deg', pitch: '-6deg' } },
-      { nodeId: 'tensionboard', position: { yaw: '136deg', pitch: '-2deg' } },
-      { nodeId: 'frontdesk', position: { yaw: '147deg', pitch: '-7deg' } },
+      { nodeId: 'closet', position: { yaw: rad(18), pitch: rad(-10) } },
+      { nodeId: 'tensionboard', position: { yaw: rad(142), pitch: rad(-6) } },
+      { nodeId: 'frontdesk', position: { yaw: rad(152), pitch: rad(-8) } },
     ],
   },
   {
@@ -85,10 +92,27 @@ const NODES = [
     name: 'The Closet',
     caption: 'The Closet — Back corner walls',
     links: [
-      { nodeId: 'back', position: { yaw: '-85deg', pitch: '-4deg' } },
+      { nodeId: 'back', position: { yaw: rad(-62), pitch: rad(-10) } },
     ],
   },
 ];
+
+// Arriving at `toNode` from `fromNode`: keep walking in the direction of
+// travel, i.e. face away from the door you just came through (the reverse
+// of toNode's return link). Falls back to the scene's default view.
+function arrivalView(toNode, fromNode) {
+  // The tension board is a dead-end attraction — always arrive facing the board.
+  if (toNode.id === 'tensionboard') {
+    return DEFAULT_VIEWS.tensionboard;
+  }
+  const backLink = fromNode && toNode.links.find((l) => l.nodeId === fromNode.id);
+  if (backLink) {
+    let yaw = backLink.position.yaw + Math.PI;
+    if (yaw > Math.PI) yaw -= 2 * Math.PI;
+    return { yaw, pitch: 0 };
+  }
+  return DEFAULT_VIEWS[toNode.id];
+}
 
 const viewer = new Viewer({
   container: 'viewer',
@@ -109,15 +133,15 @@ const viewer = new Viewer({
     VirtualTourPlugin.withConfig({
       dataMode: 'client',
       positionMode: 'manual',
-      renderMode: '3d',
+      renderMode: '2d',
       startNodeId: 'entrance',
       preload: true,
       nodes: NODES,
-      transitionOptions: (toNode) => ({
-        speed: '20rpm',
+      transitionOptions: (toNode, fromNode) => ({
+        speed: 1000,
         effect: 'fade',
         rotation: true,
-        rotateTo: DEFAULT_VIEWS[toNode.id],
+        rotateTo: arrivalView(toNode, fromNode),
       }),
     }),
     AutorotatePlugin.withConfig({
