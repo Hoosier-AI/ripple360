@@ -77,7 +77,9 @@ const NODES = [
     links: [
       { nodeId: 'tensionboard', position: { yaw: rad(158), pitch: rad(-7) } },
       { nodeId: 'entrance', position: { yaw: rad(174), pitch: rad(-7) } },
-      { nodeId: 'closet', position: { yaw: rad(188), pitch: rad(-9) } },
+      // The way to the closet is the white panel door in the alcove between the
+      // climbing walls, not around the orange overhang — confirmed by the user.
+      { nodeId: 'closet', position: { yaw: rad(257), pitch: rad(-12) } },
     ],
   },
   {
