@@ -65,7 +65,11 @@ const NODES = [
     links: [
       { nodeId: 'frontdesk', position: { yaw: rad(-11), pitch: rad(-11) } },
       { nodeId: 'entrance', position: { yaw: rad(52), pitch: rad(-8) } },
-      { nodeId: 'garage', position: { yaw: rad(68), pitch: rad(-7) } },
+      // The roll-up door is immediately left of the entrance storefront and
+      // largely hidden behind a leaning crash pad — its overhead track and
+      // operator give it away. Easy to mistake the two; 68 put this arrow out
+      // on the entrance glass, reading as "outside".
+      { nodeId: 'garage', position: { yaw: rad(37), pitch: rad(-8) } },
     ],
   },
   {
