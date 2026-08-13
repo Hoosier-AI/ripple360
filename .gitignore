@@ -3,3 +3,7 @@ originals/
 .playwright-mcp/
 *.jpeg
 higgsfield-fix/
+
+# AI assistant files
+CLAUDE.md
+.claude/

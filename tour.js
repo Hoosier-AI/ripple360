@@ -3,10 +3,12 @@ import { GalleryPlugin } from '@photo-sphere-viewer/gallery-plugin';
 import { VirtualTourPlugin } from '@photo-sphere-viewer/virtual-tour-plugin';
 import { AutorotatePlugin } from '@photo-sphere-viewer/autorotate-plugin';
 
-// Embedded on the Space page as /tour/index.html?embed=1 — hides this tour's own
-// branding overlay (see .embed in style.css) so it isn't printed twice. A direct
-// visit has no flag and looks unchanged.
-if (new URLSearchParams(location.search).has('embed')) {
+// Embedded as the Space page hero at /tour/index.html?embed=1. The tour is the
+// first thing on that page, so it must not swallow the page scroll — see
+// touchmoveTwoFingers/mousewheelCtrlKey below. A direct visit has no flag and
+// keeps the immediate one-finger, bare-wheel controls.
+const EMBED = new URLSearchParams(location.search).has('embed');
+if (EMBED) {
   document.documentElement.classList.add('embed');
 }
 
@@ -150,8 +152,13 @@ function arrivalView(toNode, fromNode) {
 const viewer = new Viewer({
   container: 'viewer',
   loadingTxt: 'Loading Ripple Boulder…',
-  touchmoveTwoFingers: false,
-  mousewheelCtrlKey: false,
+  // Embedded, the tour fills the top of the Space page, so a one-finger swipe
+  // or a bare scroll wheel has to move the page past it — otherwise the reader
+  // is stuck spinning the gym. Two fingers / ctrl+wheel drive the tour instead,
+  // and PSV puts up its own overlay saying so. Standalone, neither gets in the
+  // way, so both stay off.
+  touchmoveTwoFingers: EMBED,
+  mousewheelCtrlKey: EMBED,
   defaultZoomLvl: 0,
   defaultYaw: '30deg',
   navbar: ['zoom', 'move', 'gallery', 'caption', 'fullscreen'],
@@ -159,7 +166,11 @@ const viewer = new Viewer({
     // GalleryPlugin must be registered before VirtualTourPlugin so the tour
     // can populate the gallery with its nodes.
     GalleryPlugin.withConfig({
-      visibleOnLoad: true,
+      // Wide, the gallery is a thin strip along the bottom and worth having open.
+      // Narrow, PSV renders it as a full panel that covers the whole viewer, so
+      // opening it on load means you land on a grid of thumbnails instead of the
+      // gym. Same 600px breakpoint as style.css. The navbar button still opens it.
+      visibleOnLoad: window.innerWidth > 600,
       hideOnClick: false,
       thumbnailSize: { width: 100, height: 100 },
     }),
