@@ -13,17 +13,24 @@ const DEFAULT_VIEWS = {
   entrance: { yaw: rad(30), pitch: 0 },
   frontdesk: { yaw: rad(-150), pitch: 0 },
   tensionboard: { yaw: rad(108), pitch: 0 },
-  garage: { yaw: rad(-90), pitch: 0 },
+  garage: { yaw: rad(100), pitch: 0 },
   back: { yaw: rad(-20), pitch: 0 },
-  closet: { yaw: rad(-90), pitch: 0 },
+  closet: { yaw: rad(200), pitch: 0 },
 };
 
 function rad(deg) {
   return (deg * Math.PI) / 180;
 }
 
-// Link yaw/pitch values are calibrated against on-screen angle rulers —
-// each arrow sits on the floor of the passage it leads through.
+// Each arrow sits on the floor in the direction you would walk to reach that
+// station — in the doorway itself where one separates the two.
+//
+// Yaw/pitch are calibrated with higgsfield-fix/aim.py, which renders the
+// panorama view each link points at with a crosshair on its exact aim, and
+// higgsfield-fix/strip.py, which renders a yaw-labelled strip so a landmark's
+// bearing can be read off directly. Where a station is not visible from another
+// (the garage bay and the tension board cannot see each other), the bearing is
+// triangulated from landmarks both panoramas do share.
 const NODES = [
   {
     id: 'entrance',
@@ -47,7 +54,6 @@ const NODES = [
       { nodeId: 'entrance', position: { yaw: rad(-162), pitch: rad(-8) } },
       { nodeId: 'tensionboard', position: { yaw: rad(-120), pitch: rad(-8) } },
       { nodeId: 'back', position: { yaw: rad(38), pitch: rad(-18) } },
-      { nodeId: 'garage', position: { yaw: rad(160), pitch: rad(-6) } },
     ],
   },
   {
@@ -59,6 +65,7 @@ const NODES = [
     links: [
       { nodeId: 'frontdesk', position: { yaw: rad(-11), pitch: rad(-11) } },
       { nodeId: 'entrance', position: { yaw: rad(52), pitch: rad(-8) } },
+      { nodeId: 'garage', position: { yaw: rad(68), pitch: rad(-7) } },
     ],
   },
   {
@@ -68,9 +75,9 @@ const NODES = [
     name: 'Garage',
     caption: 'Garage — Roll-up door & patio',
     links: [
-      { nodeId: 'back', position: { yaw: rad(-118), pitch: rad(-8) } },
-      { nodeId: 'tensionboard', position: { yaw: rad(163), pitch: rad(-6) } },
-      { nodeId: 'frontdesk', position: { yaw: rad(175), pitch: rad(-6) } },
+      { nodeId: 'tensionboard', position: { yaw: rad(158), pitch: rad(-7) } },
+      { nodeId: 'entrance', position: { yaw: rad(174), pitch: rad(-7) } },
+      { nodeId: 'closet', position: { yaw: rad(188), pitch: rad(-9) } },
     ],
   },
   {
@@ -92,7 +99,8 @@ const NODES = [
     name: 'The Closet',
     caption: 'The Closet — Back corner walls',
     links: [
-      { nodeId: 'back', position: { yaw: rad(-62), pitch: rad(-10) } },
+      { nodeId: 'garage', position: { yaw: rad(204), pitch: rad(-6) } },
+      { nodeId: 'back', position: { yaw: rad(253), pitch: rad(-8) } },
     ],
   },
 ];
