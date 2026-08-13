@@ -101,8 +101,12 @@ const NODES = [
     name: 'The Closet',
     caption: 'The Closet — Back corner walls',
     links: [
+      // Aimed across the room at the glass roll-up door rather than at the panel
+      // door you actually walk through — the user's call, it reads better.
       { nodeId: 'garage', position: { yaw: rad(204), pitch: rad(-6) } },
-      { nodeId: 'back', position: { yaw: rad(253), pitch: rad(-8) } },
+      // Out through the recessed bay with the pale plywood wall, not past the
+      // overhang by the cubby boxes — confirmed by the user.
+      { nodeId: 'back', position: { yaw: rad(295), pitch: rad(-12) } },
     ],
   },
 ];
