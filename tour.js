@@ -85,8 +85,10 @@ const NODES = [
     name: 'Garage',
     caption: 'Garage — Roll-up door & patio',
     links: [
-      { nodeId: 'tensionboard', position: { yaw: rad(158), pitch: rad(-7) } },
-      { nodeId: 'entrance', position: { yaw: rad(174), pitch: rad(-7) } },
+      // Swapped per the user: the nearer arrow (158) is the way to the
+      // entrance, the further one (174) leads to the tension board.
+      { nodeId: 'entrance', position: { yaw: rad(158), pitch: rad(-7) } },
+      { nodeId: 'tensionboard', position: { yaw: rad(174), pitch: rad(-7) } },
       // The way to the closet is the white panel door in the alcove between the
       // climbing walls, not around the orange overhang — confirmed by the user.
       { nodeId: 'closet', position: { yaw: rad(257), pitch: rad(-12) } },
