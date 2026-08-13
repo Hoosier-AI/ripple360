@@ -3,8 +3,14 @@ import { GalleryPlugin } from '@photo-sphere-viewer/gallery-plugin';
 import { VirtualTourPlugin } from '@photo-sphere-viewer/virtual-tour-plugin';
 import { AutorotatePlugin } from '@photo-sphere-viewer/autorotate-plugin';
 
-const pano = (name) => `assets/panos/${name}.jpg`;
-const thumb = (name) => `assets/thumbs/${name}.jpg`;
+// Bump when a panorama or thumbnail image changes, so browsers holding a cached
+// copy actually pick up the repair. Deliberately separate from the ?v= on this
+// file in index.html: that one moves on every navigation tweak, and reusing it
+// would re-download ~20 MB of panoramas to fix a one-line link change.
+const ASSET_V = '20260813';
+
+const pano = (name) => `assets/panos/${name}.jpg?v=${ASSET_V}`;
+const thumb = (name) => `assets/thumbs/${name}.jpg?v=${ASSET_V}`;
 
 // Fallback view per scene, used on the first load and for gallery jumps
 // (arrivals through a door face the direction of travel instead — see
