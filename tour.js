@@ -3,6 +3,13 @@ import { GalleryPlugin } from '@photo-sphere-viewer/gallery-plugin';
 import { VirtualTourPlugin } from '@photo-sphere-viewer/virtual-tour-plugin';
 import { AutorotatePlugin } from '@photo-sphere-viewer/autorotate-plugin';
 
+// Embedded on the Space page as /tour/index.html?embed=1 — hides this tour's own
+// branding overlay (see .embed in style.css) so it isn't printed twice. A direct
+// visit has no flag and looks unchanged.
+if (new URLSearchParams(location.search).has('embed')) {
+  document.documentElement.classList.add('embed');
+}
+
 // Bump when a panorama or thumbnail image changes, so browsers holding a cached
 // copy actually pick up the repair. Deliberately separate from the ?v= on this
 // file in index.html: that one moves on every navigation tweak, and reusing it

@@ -48,6 +48,12 @@ html, body {
   margin-top: 2px;
 }
 
+/* Embedded in the Ripple site (?embed=1): the page already carries the branding
+   and a "Virtual tour" heading directly above the iframe, so drop ours. */
+.embed .brand {
+  display: none;
+}
+
 /* ---- first-visit hint ---- */
 .hint {
   position: fixed;
