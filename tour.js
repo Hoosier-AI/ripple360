@@ -161,7 +161,13 @@ const viewer = new Viewer({
   mousewheelCtrlKey: EMBED,
   defaultZoomLvl: 0,
   defaultYaw: '30deg',
-  navbar: ['zoom', 'move', 'gallery', 'caption', 'fullscreen'],
+  // Narrow (phone-width iframe or window), the full bar doesn't fit: the zoom
+  // slider alone is ~90px and the caption gets crushed. Pinch covers zoom and
+  // the page's own heading covers the caption, so keep the three that matter.
+  navbar:
+    window.innerWidth < 500
+      ? ['move', 'gallery', 'fullscreen']
+      : ['zoom', 'move', 'gallery', 'caption', 'fullscreen'],
   plugins: [
     // GalleryPlugin must be registered before VirtualTourPlugin so the tour
     // can populate the gallery with its nodes.
@@ -179,7 +185,10 @@ const viewer = new Viewer({
       positionMode: 'manual',
       renderMode: '2d',
       startNodeId: 'entrance',
-      preload: true,
+      // Preloading pulls every pano linked from the current scene (~4 MB each).
+      // Worth it on desktop for instant walking; on a phone (or Save-Data) it's
+      // ~12 MB the visitor may never use, racing the page's own images.
+      preload: window.innerWidth > 600 && !navigator.connection?.saveData,
       nodes: NODES,
       transitionOptions: (toNode, fromNode) => ({
         speed: 1000,
@@ -209,6 +218,13 @@ tour.addEventListener('node-changed', () => {
 
 // Fade out the usage hint after first interaction (or 8s)
 const hint = document.getElementById('hint');
+// The default copy assumes a mouse. On touch, embedded panning needs two
+// fingers (touchmoveTwoFingers above) — say so, or the tour reads as broken.
+if (matchMedia('(pointer: coarse)').matches) {
+  hint.textContent = EMBED
+    ? 'Two fingers to look around · tap the arrows to walk through the gym'
+    : 'Drag to look around · tap the arrows to walk through the gym';
+}
 const hideHint = () => hint.classList.add('hidden');
 setTimeout(hideHint, 8000);
 viewer.addEventListener('click', hideHint, { once: true });

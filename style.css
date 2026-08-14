@@ -29,6 +29,13 @@ html, body {
   user-select: none;
 }
 
+/* Embedded on the Space page the site's own heading sits right above the
+   iframe, so the badge would just repeat it — and at phone widths it eats a
+   real chunk of the viewer. ?embed=1 sets this class (see tour.js). */
+.embed .brand {
+  display: none;
+}
+
 .brand-badge {
   display: block;
   width: 76px;
