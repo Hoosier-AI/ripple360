@@ -16,7 +16,7 @@ if (EMBED) {
 // copy actually pick up the repair. Deliberately separate from the ?v= on this
 // file in index.html: that one moves on every navigation tweak, and reusing it
 // would re-download ~20 MB of panoramas to fix a one-line link change.
-const ASSET_V = '20260813b';
+const ASSET_V = '20260814a';
 
 const pano = (name) => `assets/panos/${name}.jpg?v=${ASSET_V}`;
 const thumb = (name) => `assets/thumbs/${name}.jpg?v=${ASSET_V}`;
